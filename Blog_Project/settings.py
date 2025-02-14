@@ -11,21 +11,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR/".eVar", ".env" ))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_$s0mkxso7))8(u0gunckw=55c(!3ccm-ac_m1%9k$q_!6#lx='
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS += os.environ.get('ALLOWED_HOSTS').split()
 
 
 # Application definition
@@ -47,8 +52,8 @@ EXTERNAL_APPS = [
 
 INSTALLED_APPS += EXTERNAL_APPS
 
-RAZORPAY_KEY_ID = 'rzp_test_JaK4MBiyWahlRx'
-RAZORPAY_KEY_SECRET = 'LS3j7dypEPln4zjUsooEZUGG'
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
  
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,12 +89,14 @@ WSGI_APPLICATION = 'Blog_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
+# Database Configuration
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'blogdb.sqlite3',    # Database file name
-    }
+    'default': dj_database_url.parse(
+        os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'blogdb.sqlite'}")
+    )
 }
+
 
 
 # Password validation
@@ -127,6 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
